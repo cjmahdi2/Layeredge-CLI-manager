@@ -63,7 +63,7 @@ install_go() {
     tar -C /usr/local -xzf go1.20.4.linux-amd64.tar.gz
     echo "export PATH=\$PATH:/usr/local/go/bin" >>/etc/profile
     echo "export PATH=\$PATH:/usr/local/go/bin" >>$HOME/.bashrc
-    source /etc/profile
+    source ~/.bashrc
     rm go1.20.4.linux-amd64.tar.gz
     print_success "Go installed successfully"
 }
@@ -87,8 +87,8 @@ check_go() {
 install_rust() {
     print_message "Installing Rust 1.81.0+..."
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    source $HOME/.cargo/env
-    echo "source $HOME/.cargo/env" >>$HOME/.bashrc
+    source ~/.cargo/env
+    echo "source $HOME/.cargo/env" >>~/.bashrc
     rustup default stable
     rustup update
     print_success "Rust installed successfully"
@@ -113,8 +113,8 @@ check_rust() {
 install_risc0() {
     print_message "Installing Risc0 toolchain..."
     curl -L https://risczero.com/install | bash
-    source $HOME/.bashrc
-    source $HOME/.cargo/env
+    source ~/.bashrc
+    source ~/.cargo/env
     rzup install
     print_success "Risc0 toolchain installed successfully"
 }
