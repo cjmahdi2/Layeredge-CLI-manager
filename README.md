@@ -29,7 +29,7 @@ LayerEdge Light Node Manager simplifies the process of setting up, configuring, 
 
 1. Download the script:
 ```bash
-wget https://raw.githubusercontent.com/TheyCallMeSecond/layeredge-manager/main/layeredge-cli.sh
+wget https://raw.githubusercontent.com/TheyCallMeSecond/Layeredge-CLI-manager/refs/heads/main/layeredge-cli.sh
 ```
 
 2. Make it executable:
