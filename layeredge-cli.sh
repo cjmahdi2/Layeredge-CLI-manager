@@ -59,12 +59,12 @@ update_system() {
 # Install Go
 install_go() {
     print_message "Installing Go 1.18+..."
-    wget https://go.dev/dl/go1.20.4.linux-amd64.tar.gz
-    tar -C /usr/local -xzf go1.20.4.linux-amd64.tar.gz
-    echo "export PATH=\$PATH:/usr/local/go/bin" >>/etc/profile
-    echo "export PATH=\$PATH:/usr/local/go/bin" >>$HOME/.bashrc
+    wget https://go.dev/dl/go1.22.5.linux-amd64.tar.gz
+    sudo rm -rf /usr/local/go
+    sudo tar -C /usr/local -xzf go1.22.5.linux-amd64.tar.gz
+    echo 'export PATH=$PATH:/usr/local/go/bin' >>~/.bashrc
     source ~/.bashrc
-    rm go1.20.4.linux-amd64.tar.gz
+    rm go1.22.5.linux-amd64.tar.gz
     print_success "Go installed successfully"
 }
 
@@ -88,9 +88,6 @@ install_rust() {
     print_message "Installing Rust 1.81.0+..."
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     source ~/.cargo/env
-    echo "source $HOME/.cargo/env" >>~/.bashrc
-    rustup default stable
-    rustup update
     print_success "Rust installed successfully"
 }
 
@@ -114,7 +111,6 @@ install_risc0() {
     print_message "Installing Risc0 toolchain..."
     curl -L https://risczero.com/install | bash
     source ~/.bashrc
-    source ~/.cargo/env
     rzup install
     print_success "Risc0 toolchain installed successfully"
 }
