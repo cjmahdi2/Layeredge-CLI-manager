@@ -34,12 +34,12 @@ wget https://raw.githubusercontent.com/TheyCallMeSecond/layeredge-manager/main/l
 
 2. Make it executable:
 ```bash
-chmod +x layeredge-menu.sh
+chmod +x layeredge-cli.sh
 ```
 
 3. Run the script with sudo:
 ```bash
-sudo ./layeredge-menu.sh
+sudo ./layeredge-cli.sh
 ```
 
 4. Select option 1 from the menu for a full installation
