@@ -62,8 +62,8 @@ install_go() {
     wget https://go.dev/dl/go1.22.5.linux-amd64.tar.gz
     sudo rm -rf /usr/local/go
     sudo tar -C /usr/local -xzf go1.22.5.linux-amd64.tar.gz
-    echo 'export PATH=$PATH:/usr/local/go/bin' >>~/.bashrc
-    source ~/.bashrc
+    export PATH=$PATH:/usr/local/go/bin
+    echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
     rm go1.22.5.linux-amd64.tar.gz
     print_success "Go installed successfully"
 }
@@ -110,7 +110,7 @@ check_rust() {
 install_risc0() {
     print_message "Installing Risc0 toolchain..."
     curl -L https://risczero.com/install | bash
-    source ~/.bashrc
+    export PATH="$HOME/.risc0/bin:$PATH"
     rzup install
     print_success "Risc0 toolchain installed successfully"
 }
@@ -150,7 +150,7 @@ GRPC_URL=34.31.74.109:9090
 CONTRACT_ADDR=cosmos1ufs3tlq4umljk0qfe8k5ya0x6hpavn897u2cnf9k0en9jr7qarqqt56709
 ZK_PROVER_URL=http://127.0.0.1:3001
 API_REQUEST_TIMEOUT=100
-POINTS_API=http://127.0.0.1:8080
+POINTS_API=https://light-node.layeredge.io
 EOF
 
     # Ask for private key
@@ -180,7 +180,8 @@ build_merkle() {
 build_node() {
     print_message "Building LayerEdge Light Node..."
     cd $LAYEREDGE_DIR
-    source /etc/profile
+    export GOROOT=/usr/local/go
+    export PATH=$GOROOT/bin:$PATH
     go build
     print_success "Light Node built successfully"
 }
@@ -240,7 +241,7 @@ setup_firewall() {
     print_message "Configuring firewall..."
     ufw allow 22/tcp
     ufw allow 3001/tcp
-    ufw allow 8080/tcp
+    ufw allow 9090/tcp
     ufw --force enable
     print_success "Firewall configured"
 }
@@ -339,8 +340,12 @@ view_service_status() {
     read -p "Select service: " service_choice
 
     case $service_choice in
-    1) systemctl status layeredge-merkle.service ;;
-    2) systemctl status layeredge-node.service ;;
+    1) systemctl status layeredge-merkle.service
+        read -p "Press Enter to continue..." ;;
+
+    2) systemctl status layeredge-node.service 
+        read -p "Press Enter to continue...";;
+        
     3) return ;;
     *) print_error "Invalid selection" ;;
     esac
@@ -414,6 +419,8 @@ show_banner() {
     echo "║               LayerEdge Light Node Manager               ║"
     echo "║                                                          ║"
     echo "╚══════════════════════════════════════════════════════════╝"
+    echo "By : https://x.com/theTCS_"
+    echo "Version : 1.2"
     echo -e "${NC}"
 }
 
