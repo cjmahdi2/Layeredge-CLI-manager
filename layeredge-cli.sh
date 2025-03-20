@@ -345,7 +345,7 @@ view_service_status() {
 
     2) systemctl status layeredge-node.service 
         read -p "Press Enter to continue...";;
-        
+
     3) return ;;
     *) print_error "Invalid selection" ;;
     esac
@@ -371,6 +371,32 @@ update_private_key() {
         systemctl restart layeredge-node.service
     else
         print_error ".env file not found. Please run setup first."
+    fi
+}
+
+get_public_key() {
+    LOG_FILE="$LOG_DIR/node-error.log"
+    
+    # Check if log file exists
+    if [ ! -f "$LOG_FILE" ]; then
+        print_error "Node log file not found!"
+        return 1
+    fi
+
+    # Extract the most recent public key
+    PUBLIC_KEY=$(grep "Compressed Public Key: " "$LOG_FILE" | awk -F': ' '{print $2}' | tail -n1)
+
+    if [ -z "$PUBLIC_KEY" ]; then
+        print_error "No public key found in logs"
+    else
+        echo -e "\n${GREEN}=== Compressed Public Key ===${NC}"
+        echo "$PUBLIC_KEY"
+        
+        # Optional: Copy to clipboard if xclip is installed
+        if command -v xclip &> /dev/null; then
+            echo "$PUBLIC_KEY" | xclip -selection clipboard
+            print_success "Key copied to clipboard!"
+        fi
     fi
 }
 
@@ -440,12 +466,13 @@ main_menu() {
         echo "7) View Service Status"
         echo ""
         echo -e "${CYAN}Monitoring & Configuration:${NC}"
-        echo "8) Check Node Status"
-        echo "9) View Logs"
+        echo "8)  Check Node Status"
+        echo "9)  View Logs"
         echo "10) Update Private Key"
-        echo "11) Dashboard Connection Info"
+        echo "11) Get Public Key"       
+        echo "12) Dashboard Connection Info"
         echo ""
-        echo "12) Exit"
+        echo "13) Exit"
         echo ""
         read -p "Enter your choice: " choice
 
@@ -495,9 +522,14 @@ main_menu() {
             read -p "Press Enter to continue..."
             ;;
         11)
+            check_root
+            get_public_key
+            read -p "Press Enter to continue..."
+            ;;    
+        12)
             show_dashboard_info
             ;;
-        12)
+        13)
             echo "Exiting LayerEdge Light Node Manager. Goodbye!"
             exit 0
             ;;
