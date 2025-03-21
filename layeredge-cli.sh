@@ -58,14 +58,14 @@ update_system() {
 
 # Install Go
 install_go() {
-    print_message "Installing Go 1.18+..."
-    wget https://go.dev/dl/go1.22.5.linux-amd64.tar.gz
+    print_message "Installing Go 1.23..."
+    wget https://go.dev/dl/go1.23.0.linux-amd64.tar.gz
     sudo rm -rf /usr/local/go
-    sudo tar -C /usr/local -xzf go1.22.5.linux-amd64.tar.gz
+    sudo tar -C /usr/local -xzf go1.23.0.linux-amd64.tar.gz
     export PATH=$PATH:/usr/local/go/bin
-    echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
-    rm go1.22.5.linux-amd64.tar.gz
-    print_success "Go installed successfully"
+    echo 'export PATH=$PATH:/usr/local/go/bin' >>~/.bashrc
+    rm go1.23.0.linux-amd64.tar.gz
+    print_success "Go 1.23 installed successfully"
 }
 
 # Check if Go is installed
@@ -340,11 +340,15 @@ view_service_status() {
     read -p "Select service: " service_choice
 
     case $service_choice in
-    1) systemctl status layeredge-merkle.service
-        read -p "Press Enter to continue..." ;;
+    1)
+        systemctl status layeredge-merkle.service
+        read -p "Press Enter to continue..."
+        ;;
 
-    2) systemctl status layeredge-node.service 
-        read -p "Press Enter to continue...";;
+    2)
+        systemctl status layeredge-node.service
+        read -p "Press Enter to continue..."
+        ;;
 
     3) return ;;
     *) print_error "Invalid selection" ;;
@@ -376,7 +380,7 @@ update_private_key() {
 
 get_public_key() {
     LOG_FILE="$LOG_DIR/node-error.log"
-    
+
     # Check if log file exists
     if [ ! -f "$LOG_FILE" ]; then
         print_error "Node log file not found!"
@@ -391,13 +395,62 @@ get_public_key() {
     else
         echo -e "\n${GREEN}=== Compressed Public Key ===${NC}"
         echo "$PUBLIC_KEY"
-        
+
         # Optional: Copy to clipboard if xclip is installed
-        if command -v xclip &> /dev/null; then
+        if command -v xclip &>/dev/null; then
             echo "$PUBLIC_KEY" | xclip -selection clipboard
             print_success "Key copied to clipboard!"
         fi
     fi
+}
+
+# Uninstall LayerEdge
+uninstall_layeredge() {
+    print_message "Starting LayerEdge uninstallation process..."
+
+    # Confirm uninstallation
+    echo -e "${RED}WARNING: This will completely remove LayerEdge Light Node from your system.${NC}"
+    echo -e "${RED}All data, services, and configuration will be deleted.${NC}"
+    read -p "Are you sure you want to continue? (y/n): " confirm
+
+    if [[ ! $confirm =~ ^[Yy]$ ]]; then
+        print_message "Uninstallation cancelled"
+        return
+    fi
+
+    # Stop services
+    print_message "Stopping LayerEdge services..."
+    systemctl stop layeredge-node.service 2>/dev/null
+    systemctl stop layeredge-merkle.service 2>/dev/null
+
+    # Disable services
+    print_message "Disabling services..."
+    systemctl disable layeredge-node.service 2>/dev/null
+    systemctl disable layeredge-merkle.service 2>/dev/null
+
+    # Remove service files
+    print_message "Removing systemd service files..."
+    rm -f /etc/systemd/system/layeredge-node.service
+    rm -f /etc/systemd/system/layeredge-merkle.service
+    systemctl daemon-reload
+
+    # Remove log directory
+    print_message "Removing log files..."
+    rm -rf $LOG_DIR
+
+    # Remove LayerEdge directory
+    print_message "Removing LayerEdge directory..."
+    rm -rf $LAYEREDGE_DIR
+
+    # Remove status script
+    print_message "Removing status check script..."
+    rm -f $HOME_DIR/check-layeredge-status.sh
+
+    print_message "============================================"
+    print_success "LayerEdge Light Node has been successfully uninstalled!"
+    print_message "NOTE: This script did NOT remove Go, Rust, or Risc0 installations."
+    print_message "============================================"
+    read -p "Press Enter to continue..."
 }
 
 # Dashboard connection info
@@ -446,7 +499,7 @@ show_banner() {
     echo "║                                                          ║"
     echo "╚══════════════════════════════════════════════════════════╝"
     echo "By : https://x.com/theTCS_"
-    echo "Version : 1.2"
+    echo "Version : 1.3"
     echo -e "${NC}"
 }
 
@@ -469,10 +522,11 @@ main_menu() {
         echo "8)  Check Node Status"
         echo "9)  View Logs"
         echo "10) Update Private Key"
-        echo "11) Get Public Key"       
+        echo "11) Get Public Key"
         echo "12) Dashboard Connection Info"
+        echo "13) Uninstall LayerEdge"
         echo ""
-        echo "13) Exit"
+        echo "14) Exit"
         echo ""
         read -p "Enter your choice: " choice
 
@@ -525,11 +579,15 @@ main_menu() {
             check_root
             get_public_key
             read -p "Press Enter to continue..."
-            ;;    
+            ;;
         12)
             show_dashboard_info
             ;;
         13)
+            check_root
+            uninstall_layeredge
+            ;;
+        14)
             echo "Exiting LayerEdge Light Node Manager. Goodbye!"
             exit 0
             ;;
