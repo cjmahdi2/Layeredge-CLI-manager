@@ -236,16 +236,6 @@ EOF
     print_success "Systemd services created"
 }
 
-# Configure firewall
-setup_firewall() {
-    print_message "Configuring firewall..."
-    ufw allow 22/tcp
-    ufw allow 3001/tcp
-    ufw allow 9090/tcp
-    ufw --force enable
-    print_success "Firewall configured"
-}
-
 # Enable and start services
 start_services() {
     print_message "Enabling and starting services..."
