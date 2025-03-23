@@ -2,7 +2,7 @@
 
 A comprehensive, menu-driven installation and management script for LayerEdge Light Nodes on Ubuntu.
 
-![LayerEdge Banner](https://raw.githubusercontent.com/TheyCallMeSecond/Layeredge-CLI-manager/refs/heads/main/layeredge.png)
+![LayerEdge Banner](https://raw.githubusercontent.com/cjmahdi2/Layeredge-CLI-manager/refs/heads/main/layeredge.png)
 
 ## Overview
 
